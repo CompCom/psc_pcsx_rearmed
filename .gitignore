@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# PCSX compiler generated files
+pcsx
+pcsx.map
+config.log
+config.mak

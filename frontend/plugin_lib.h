@@ -30,6 +30,7 @@ extern int g_layer_w, g_layer_h;
 
 void  pl_start_watchdog(void);
 void *pl_prepare_screenshot(int *w, int *h, int *bpp);
+void *pl_prepare_resized_screenshot(int *w, int *h, int *bpp);
 void  pl_init(void);
 void  pl_switch_dispmode(void);
 

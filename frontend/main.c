@@ -380,7 +380,7 @@ do_state_slot:
 			void *scrbuf;
 			int w, h, bpp;
 
-			scrbuf = pl_prepare_screenshot(&w, &h, &bpp);
+			scrbuf = pl_prepare_resized_screenshot(&w, &h, &bpp);
 			get_gameid_filename(buf, sizeof(buf),
 				"." SCSHOT_DIR "%.32s-%.9s.png", 0);
 			ret = -1;

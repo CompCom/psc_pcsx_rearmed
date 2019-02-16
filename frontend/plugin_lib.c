@@ -610,6 +610,50 @@ void *pl_prepare_screenshot(int *w, int *h, int *bpp)
 
 }
 
+void *pl_prepare_resized_screenshot(int *w, int *h, int *bpp)
+{
+	//Halve width and height of image in video buffer
+	*w = pl_vout_w/2;
+	*h = pl_vout_h/2;
+	*bpp = pl_vout_bpp;
+
+	if( s_bgr24_old ){
+		*bpp = 16;
+		const int tBufSize = *w * *h * 3;
+		//Create temp buffer to store resized image
+		unsigned char temp_image_buf[tBufSize];
+		unsigned char * vout_buf = (unsigned char *)pl_vout_buf;
+		int i, j, max = *h * *w;
+		//Copy pixels to temp image buffer skipping every 2nd pixel in video buffer
+		for(i = 0, j = 0; i < max; ++i,j+=2)
+		{
+			//Skip every 2nd line
+			if((i % *w) == 0)
+				j += pl_vout_w;
+			temp_image_buf[i*3] = vout_buf[j*3];
+			temp_image_buf[i*3+1] = vout_buf[j*3+1];
+			temp_image_buf[i*3+2] = vout_buf[j*3+2];
+		} 
+		//Convert resized image format
+		bgr888_to_rgb565(s_scrennshotBuf, temp_image_buf, tBufSize);
+		return s_scrennshotBuf;
+	}else{
+		//Create pointer to pixels (16bpp)
+		uint16_t * vout_buf = (uint16_t *)pl_vout_buf;
+		uint16_t * sshot_buf = (uint16_t *)s_scrennshotBuf;
+		int i, j, max = *h * *w;
+		//Copy pixels to screenshot buffer skipping every 2nd pixel in video buffer
+		for(i = 0, j = 0; i < max; ++i,j+=2)
+		{
+			//Skip every 2nd line
+			if((i % *w) == 0)
+				j += pl_vout_w;
+			sshot_buf[i] = vout_buf[j];
+		} 
+		return s_scrennshotBuf;
+	}
+}
+
 /* display/redering mode switcher */
 static int dispmode_default(void)
 {

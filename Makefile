@@ -2,7 +2,8 @@
 
 # default stuff goes here, so that config can override
 TARGET ?= pcsx
-CFLAGS += -Wall -ggdb -Iinclude -ffast-math
+# CFLAGS += -Wall -ggdb -Iinclude -ffast-math
+CFLAGS += -Wall -Iinclude -ffast-math
 ifdef CONFIG_ENABLE_MENU
 CFLAGS += -DCONFIG_ENABLE_MENU
 endif

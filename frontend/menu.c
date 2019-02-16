@@ -43,6 +43,9 @@
 #include "arm_features.h"
 #include "revision.h"
 
+#include <SDL.h>
+#include "libpicofe/keysym.h"
+
 #define CONFIG_JP_BIOS_NAME	"romJP.bin"
 #define CONFIG_WORLD_BIOS_NAME	"romw.bin"
 
@@ -2502,8 +2505,20 @@ static int main_menu_handler(int id, int keys)
 		in_menu_wait(PBTN_MOK|PBTN_MBACK, NULL, 70);
 		break;
 	case MA_MAIN_EXIT:
-		emu_core_ask_exit();
+	{
+		//emu_core_ask_exit();
+		//Simulate Reset (exit) Button press
+		SDL_Event myEvent;
+		myEvent.key.keysym.scancode = SDL_SCANCODE_AUDIOPLAY;
+		myEvent.key.keysym.sym = SDLK_AUDIOPLAY;
+		myEvent.type = myEvent.key.type = SDL_KEYDOWN;
+		myEvent.key.windowID = 1;
+		myEvent.key.state = 1;
+		myEvent.key.repeat = 0;
+		myEvent.key.keysym.mod = 0;
+		SDL_PushEvent(&myEvent);
 		from_escape = 0;
+	}
 		return 1;
 	default:
 		lprintf("%s: something unknown selected\n", __FUNCTION__);

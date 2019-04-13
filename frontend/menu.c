@@ -233,6 +233,12 @@ static int optional_cdimg_filter(struct dirent **namelist, int count,
 		return count;
 
 	for (i = 1; i < count; i++) {
+		if(strcmp(namelist[i]->d_name, ".pcsx") == 0)
+		{
+			free(namelist[i]);
+			namelist[i] = NULL;
+			continue;
+		}
 		if (namelist[i] == NULL || namelist[i]->d_type == DT_DIR)
 			continue;
 

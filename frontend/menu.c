@@ -297,6 +297,12 @@ static int optional_cdimg_filter(struct dirent **namelist, int count,
 			}
 			continue;
 		}
+		else if (strcasecmp(ext, "m3u") == 0 || strcasecmp(ext, "png") == 0)
+		{
+			free(namelist[i]);
+			namelist[i] = NULL;
+			continue;
+		}
 
 		p = strcasestr(namelist[i]->d_name, "track");
 		if (p != NULL) {

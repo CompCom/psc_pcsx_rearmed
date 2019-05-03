@@ -96,6 +96,7 @@ typedef enum
 	MA_OPT_VOUT_MODE,
 	MA_OPT_SCANLINES,
 	MA_OPT_SCANLINE_LEVEL,
+	MA_OPT_TEXTURE_FILTER
 } menu_id;
 
 static int last_vout_w, last_vout_h, last_vout_bpp;
@@ -111,6 +112,7 @@ int soft_scaling, analog_deadzone; // for Caanoo
 int soft_filter;
 int region;
 int open_invalid_time;
+extern int texture_filter;
 
 #ifndef HAVE_PRE_ARMV7
 #define DEFAULT_PSX_CLOCK 57
@@ -652,6 +654,7 @@ static const struct {
 	CE_INTVAL(psx_clock),
 	CE_INTVAL(new_dynarec_hacks),
 	CE_INTVAL(in_enable_vibration),
+	CE_INTVAL(texture_filter),
 };
 
 static char *get_cd_label(void)
@@ -2560,6 +2563,7 @@ static int main_menu1_handler(int id, int keys)
 
 static menu_entry e_menu_main3[] =
 {
+        mee_onoff("Texture Filter", MA_OPT_TEXTURE_FILTER, texture_filter, 1),
         mee_handler_id("Change CD image", MA_MAIN_SWAP_CD,   main_menu_handler),
         mee_handler   ("PCSX Menu",       main_menu1_handler),
         mee_handler_id("Exit",            MA_MAIN_EXIT,      main_menu_handler),
@@ -2600,6 +2604,10 @@ static menu_entry e_menu_main[] =
 
 // ----------------------------
 
+//Hacky way to force buffer clearing when resizing texture vertices in menu
+//Clear buffer not needed during game execution
+extern int forceGLClearBuffer;
+
 void menu_loop(void)
 {
 	static int warned_about_bios = 0;
@@ -2633,6 +2641,7 @@ printf("        g_menuscreen_w=%d g_menuscreen_h=%d\n",g_menuscreen_w,g_menuscre
 
 	in_set_config_int(0, IN_CFG_BLOCKING, 1);
 
+	forceGLClearBuffer = 1;
 	if (from_escape == 1) {
 	        do {
 	printf("menu.c : menu_loop() : me_loop_d()\n");
@@ -2652,6 +2661,7 @@ printf("menu.c : while (in_menu_wait_any) start\n");
 		;
 printf("menu.c : while (in_menu_wait_any) end\n");
 	in_set_config_int(0, IN_CFG_BLOCKING, 0);
+	forceGLClearBuffer = 0;
 
 	menu_prepare_emu();
 }

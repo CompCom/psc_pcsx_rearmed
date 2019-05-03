@@ -75,6 +75,8 @@ int enter_mode = ENTER_DEFAULT;
 
 static int cpu_temp_limit = DEFAULT_TEMP_LIMIT;
 
+extern int texture_filter;
+
 const char *lang_list[13] = {
 	"German",		// de_de
 	"E_UK",			// en_gb
@@ -212,6 +214,8 @@ void emu_set_default_config(void)
 
 	in_type1 = PSE_PAD_TYPE_STANDARD;
 	in_type2 = PSE_PAD_TYPE_STANDARD;
+	
+	texture_filter = 1;
 }
 
 void do_emu_action(void)

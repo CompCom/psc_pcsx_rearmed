@@ -6,6 +6,8 @@
 #include "gl_platform.h"
 #include "gl.h"
 
+int texture_filter = 1;
+
 static EGLDisplay edpy;
 static EGLSurface esfc;
 static EGLContext ectxt;
@@ -112,8 +114,8 @@ int gl_init(void *display, void *window, int *quirks)
 		goto out;
 
 	// no mipmaps
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (texture_filter) ? GL_LINEAR : GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (texture_filter) ? GL_LINEAR : GL_NEAREST);
 
 	//glViewport(0, 0, 512, 512);
 	glLoadIdentity();
@@ -141,6 +143,13 @@ static float vertices[] = {
 	 0.95f, -0.95f,  0.0f, // 3  +-->
 };
 
+static float fvertices[] = {
+	-1.0f,  1.0f,  0.0f, // 0    0  1
+	 1.0f,  1.0f,  0.0f, // 1  ^
+	-1.0f, -1.0f,  0.0f, // 2  | 2  3
+	 1.0f, -1.0f,  0.0f, // 3  +-->
+};
+
 static float texture[] = {
 	0.0f, 0.0f, // we flip this:
 	1.0f, 0.0f, // v^
@@ -148,6 +157,7 @@ static float texture[] = {
 	1.0f, 1.0f, //  +-->
 };
 
+int forceGLClearBuffer = 0;
 int gl_flip(const void *fb, int w, int h, int rgb888)
 {
 	static int old_w, old_h;
@@ -175,7 +185,10 @@ int gl_flip(const void *fb, int w, int h, int rgb888)
 			return -1;
 	}
 
-	glVertexPointer(3, GL_FLOAT, 0, vertices);
+	if(forceGLClearBuffer)
+		glClear(GL_COLOR_BUFFER_BIT);
+	
+	glVertexPointer(3, GL_FLOAT, 0, (texture_filter) ? vertices : fvertices);
 	glTexCoordPointer(2, GL_FLOAT, 0, texture);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
